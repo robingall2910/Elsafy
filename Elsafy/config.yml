@@ -1,0 +1,72 @@
+# .----------------.  .----------------.  .----------------.  .----------------.  .----------------.  .----------------. 
+#| .--------------. || .--------------. || .--------------. || .--------------. || .--------------. || .--------------. |
+#| |  _________   | || |   _____      | || |    _______   | || |      __      | || |  _________   | || |  ____  ____  | |
+#| | |_   ___  |  | || |  |_   _|     | || |   /  ___  |  | || |     /  \     | || | |_   ___  |  | || | |_  _||_  _| | |
+#| |   | |_  \_|  | || |    | |       | || |  |  (__ \_|  | || |    / /\ \    | || |   | |_  \_|  | || |   \ \  / /   | |
+#| |   |  _|  _   | || |    | |   _   | || |   '.___`-.   | || |   / ____ \   | || |   |  _|      | || |    \ \/ /    | |
+#| |  _| |___/ |  | || |   _| |__/ |  | || |  |`\____) |  | || | _/ /    \ \_ | || |  _| |_       | || |    _|  |_    | |
+#| | |_________|  | || |  |________|  | || |  |_______.'  | || ||____|  |____|| || | |_____|      | || |   |______|   | |
+#| |              | || |              | || |              | || |              | || |              | || |              | |
+#| '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' |
+# '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------' 
+
+#Plugin Created by BlueFusion12
+
+#NOTE: This plugin requires Spigot in order to use advanced particle effects
+#If you do not have Spigot installed, adjusting the particle amount will have no
+#effect and particles will appear different than if using Spigot!
+#To download Spigot, visit: http://www.spigotmc.org
+
+Powers:
+    #Occasionally, when Elsafy is activated, interacting with blocks, players, items, etc. will result
+    #in freezing of the surrounding area
+    FreezeOnInteract:
+        #Enables or Disables this feature
+        enabled: true
+        #Chance that an interact will result in freezing the surrounding area (1-100)
+        probability: 10
+        #Maximum radius of freezed area
+        maxradius: 6
+    #By Double Left-Clicking, the player can launch an ice blast that freezes the area it hits
+    IceBlast:
+        #Enables or Disables this feature
+        enabled: true
+        #Enable or Disable Particles when using IceBlast
+        particles: true
+        #If particles is enabled, this controls the amount of particles (Recommended 3-8)
+        particleamount: 6
+        #Apply wither effect when IceBlast hits an entity or Player (Beware the Frozen Heart!)
+        applyfrozenheart: false
+        #Amount of time (in milliseconds) a Player must wait until using IceBlast again
+        cooldown: 1000
+    #Walking over water causes the water to freeze and spread to adjacent water blocks.
+    FreezeWater:
+        #Enables or Disables this feature
+        enabled: true
+        #Freeze Rate (Recommended 6-20)
+        freezerate: 10
+    #NOTE: This feature requires WorldEdit to be installed!
+    #By Double-clicking Spacebar then clicking Shift, an ice castle is created at your location
+    CreateCastle:
+        #Enables or Disables this feature
+        enabled: true
+        #Build Rate (Blocks per tick [Recommended 10-25]
+        buildrate: 20
+        #Enable or Disable Particles when using CreateCastle
+        particles: true
+        #If particles is enabled, this controls the amount of particles (Recommended 3-8)
+        particleamount: 6
+        #Amount of time (in seconds) a Player must wait until using CreateCastle again
+        cooldown: 120
+    #By Double Right-Clicking (with an item in your hand), a snowman is built at the location you are poiting to
+    BuildSnowman:
+        #Enables or Disables this feature
+        enabled: true
+        #Amount of time (in milliseconds) a Player must wait until using CreateCastle again
+        cooldown: 1000
+    #Randomly, between 2-5 minutes, snow particles will swirl around the character
+    SnowSwirling:
+        #Enables or Disables this feature
+        enabled: true
+    
+    

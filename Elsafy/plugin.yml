@@ -1,0 +1,10 @@
+name: Elsafy
+main: org.mcmega.Elsafy.Elsafy
+version: 0.1
+author: BlueFusion12
+softdepend: [WorldEdit]
+
+commands:
+   elsafy:
+      description: Becomes Elsa
+      usage: /<command>
