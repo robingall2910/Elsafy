@@ -1,6 +1,6 @@
 name: Elsafy
 main: org.mcmega.Elsafy.Elsafy
-version: 0.1
+version: 2.0
 author: BlueFusion12
 softdepend: [WorldEdit]
 
