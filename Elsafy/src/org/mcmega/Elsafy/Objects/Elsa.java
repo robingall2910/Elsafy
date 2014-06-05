@@ -275,9 +275,9 @@ public class Elsa {
 			return;
 		}
 		Location targetLoc = targetBlock.getLocation();
-		targetLoc.clone().add(new Vector(0,1,0));
+		Location newTargetLoc = targetLoc.clone().add(new Vector(0,1,0));
 		for (BlockFace face : BlockFace.values()){
-			Location effectLoc = targetLoc.getBlock().getRelative(face).getLocation();
+			Location effectLoc = newTargetLoc.getBlock().getRelative(face).getLocation();
 			if (Elsafy.getInstance().isSpigot()){
 				effectLoc.getWorld().spigot().playEffect(effectLoc, Effect.CLOUD, 0, 0, 0, 0, 0, 1, 15, 150);
 			}else{
@@ -285,7 +285,7 @@ public class Elsa {
 			}
 			
 		}
-		Creature c = (Creature) player.getWorld().spawnEntity(targetLoc, EntityType.SNOWMAN);
+		Creature c = (Creature) player.getWorld().spawnEntity(newTargetLoc, EntityType.SNOWMAN);
 		c.setCustomName(ChatColor.DARK_AQUA + "Olaf");
 		
 		if (lastSnowmanMessage <= System.currentTimeMillis() - 60000){

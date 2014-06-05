@@ -1,6 +1,7 @@
 package org.mcmega.Elsafy.Listeners;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -61,7 +62,9 @@ public class BridgeListener implements Listener {
 			 return;
 		 }
 		 
-		 event.setCancelled(true);
+		 if (event.getItemDrop().getItemStack().getType() == Material.PORTAL){
+			 event.setCancelled(true);
+		 }
 	 }
 	 
 	 /*@EventHandler
