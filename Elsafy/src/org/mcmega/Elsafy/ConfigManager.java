@@ -1,5 +1,8 @@
 package org.mcmega.Elsafy;
 
+import java.io.File;
+import java.util.logging.Level;
+
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -23,7 +26,7 @@ public class ConfigManager {
 	public boolean freezeWaterEnabled;
 	public int freezeWaterRate;
 	
-	//CreateCastke
+	//CreateCastle
 	public boolean createCastleEnabled;
 	public int createCastleRate;
 	public boolean createCastleParticles;
@@ -36,6 +39,23 @@ public class ConfigManager {
 	
 	//Snow Swirling
 	public boolean snowSwirlingEnabled;
+	
+	//Snow Pillars
+	public boolean snowPillarsEnabled;
+	public boolean snowPillarParticles;
+	public int snowPillarParticleCount;
+	public int snowPillarsMisfireRate;
+	public int snowPillarsBuildRate;
+	public int snowPillarsCooldown;
+	
+	//Snowflake
+	public boolean snowflakeEnabled;
+	public int snowflakeCooldown;
+	
+	//Build Bridge
+	public boolean bridgeEnabled;
+	public boolean bridgeParticles;
+	public int bridgeParticleCount;
 	
     public boolean load(Elsafy plugin) {
         if (plugin == null) {
@@ -50,6 +70,14 @@ public class ConfigManager {
             return false;
         }
         
+        //Config Update
+        if(!config.isSet("Powers.SnowPillars")){
+        	File file = new File(plugin.getDataFolder(), "config.yml");
+        	file.delete();
+        	plugin.saveDefaultConfig();
+        	plugin.getLogger().log(Level.WARNING, "Due to an update, your configuration has been reset! Please reconfigure your config as you see fit!");
+        }
+        
         //Parse Powers
         freezeOnInteract(mainSection);
         iceBlast(mainSection);
@@ -57,11 +85,14 @@ public class ConfigManager {
         createCastle(mainSection);
         buildSnowman(mainSection);
         snowSwirling(mainSection);
+        snowPillar(mainSection);
+        snowflake(mainSection);
+        bridge(mainSection);
         
         return true;
     }
-    
-    private void freezeOnInteract(ConfigurationSection powerSection){
+
+	private void freezeOnInteract(ConfigurationSection powerSection){
     	ConfigurationSection foiSection = powerSection.getConfigurationSection("FreezeOnInteract");
     	
     	this.freezeOnInteractEnabled = foiSection.getBoolean("enabled", false);
@@ -108,5 +139,31 @@ public class ConfigManager {
     	
     	this.snowSwirlingEnabled = ssSection.getBoolean("enabled", false);
     }
-
+    
+    private void snowPillar(ConfigurationSection powerSection) {
+    	ConfigurationSection spSection = powerSection.getConfigurationSection("SnowPillars");
+    	
+		this.snowPillarsEnabled = spSection.getBoolean("enabled", true);
+		this.snowPillarParticles = spSection.getBoolean("particles", true);
+		this.snowPillarParticleCount = spSection.getInt("particleamount", 6);
+		this.snowPillarsMisfireRate = spSection.getInt("misfirerate", 10);
+		this.snowPillarsBuildRate = spSection.getInt("pillarbuildrate", 4);
+		this.snowPillarsCooldown = spSection.getInt("cooldown", 1000);
+	}
+    
+	private void snowflake(ConfigurationSection powerSection) {
+		ConfigurationSection sfSection = powerSection.getConfigurationSection("Snowflake");
+		
+		this.snowflakeEnabled = sfSection.getBoolean("enabled", true);
+		this.snowflakeCooldown = sfSection.getInt("cooldown", 5000);
+	}
+	
+	private void bridge(ConfigurationSection powerSection) {
+		ConfigurationSection bSection = powerSection.getConfigurationSection("Bridge");
+		
+		this.bridgeEnabled = bSection.getBoolean("enabled", true);
+		this.bridgeParticles = bSection.getBoolean("particles", true);
+		this.bridgeParticleCount = bSection.getInt("particleamount", 4);
+	}
+	
 }

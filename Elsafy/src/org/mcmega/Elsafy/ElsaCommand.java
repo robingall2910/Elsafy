@@ -5,6 +5,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.mcmega.Elsafy.Objects.Elsa;
 
 public class ElsaCommand implements CommandExecutor {
 	
@@ -14,6 +15,7 @@ public class ElsaCommand implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String label,String[] args) {
 		
 		if (!(sender instanceof Player)){
+			sender.sendMessage(ChatColor.RED + "Hahaha, consoles can't be Elsa!");
 			return true;
 		}
 		
@@ -22,6 +24,26 @@ public class ElsaCommand implements CommandExecutor {
 		if (!player.hasPermission("elsafy.becomeelsa")){
 			player.sendMessage(ChatColor.RED + "Just let it go, you can never be Elsa.");
 			return true;
+		}
+		
+		if (args.length > 0){
+			if (args[0].equalsIgnoreCase("bridge")){
+				if (plugin.isElsa(player.getName())){
+					Elsa elsa = plugin.getElsaObject(player.getName());
+					if (elsa.isBridgeActive){
+						player.sendMessage(ChatColor.BLUE + "Ice Bridge Disabled!");
+						elsa.disableIceBridge();
+						return true;
+					}else{
+						player.sendMessage(ChatColor.BLUE + "Ice Bridge Activated!");
+						elsa.enableIceBridge();
+						return true;
+					}
+				}
+			}else{
+				player.sendMessage(ChatColor.RED + "Use /elsafy first!");
+				return true;
+			}
 		}
 		
 		if (plugin.isElsa(player.getName())){

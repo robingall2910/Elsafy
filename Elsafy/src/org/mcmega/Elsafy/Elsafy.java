@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -12,6 +13,8 @@ import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.mcmega.Elsafy.Bridge.BridgeManager;
+import org.mcmega.Elsafy.Listeners.BridgeListener;
 import org.mcmega.Elsafy.Listeners.ElsaListener;
 import org.mcmega.Elsafy.Objects.Elsa;
 
@@ -20,6 +23,7 @@ public class Elsafy extends JavaPlugin {
 	public static Elsafy instance;
 	
 	public ConfigManager configManager;
+	public BridgeManager bridgeManager;
 	
 	public HashMap<String, Elsa> elsaList = new HashMap<String, Elsa>();
 	
@@ -46,7 +50,7 @@ public class Elsafy extends JavaPlugin {
 		log.log(Level.INFO, "|   __|| ||_ -|| .'||  _|| | |");
 		log.log(Level.INFO, "|_____||_||___||__,||_|  |_  |");
 		log.log(Level.INFO, "                         |___|");
-		log.log(Level.INFO, "Plugin Created by BlueFusion12");
+		log.log(Level.INFO, "Plugin Created by BlueFusion12! V: 2.0");
 		log.log(Level.INFO, "Plugin Video: http://youtu.be/IH6P757lDZc");
 		log.log(Level.INFO, "==============================");
 		
@@ -58,6 +62,9 @@ public class Elsafy extends JavaPlugin {
 		
 		//Save Default Schematic
 		saveResource("schematics/IceCastle.schematic");
+		//Save Bridge Schematics
+		saveResource("schematics/BridgeFlatUncomplete.schematic");
+		saveResource("schematics/BridgeElevateUncomplete.schematic");
 		
 		//Load Config
 		configManager = new ConfigManager();
@@ -65,8 +72,11 @@ public class Elsafy extends JavaPlugin {
 		
 		//Check for WorldEdit
 		if (Bukkit.getPluginManager().getPlugin("WorldEdit") == null){
-			this.getLogger().log(Level.WARNING, "WorldEdit is not installed... disabling Castle Building!");
+			log.log(Level.WARNING, "WorldEdit is not installed... disabling Castle Building!");
 			configManager.createCastleEnabled = false;
+			//Disable Bridge
+		}else{
+			bridgeManager = new BridgeManager(this);
 		}
 		
 		registerListeners();
@@ -83,6 +93,7 @@ public class Elsafy extends JavaPlugin {
 	private void registerListeners() {
 		PluginManager pm = Bukkit.getPluginManager();
 		pm.registerEvents(new ElsaListener(), this);
+		pm.registerEvents(new BridgeListener(), this);
 	}
 	
 	private void registerCommands() {
@@ -99,6 +110,10 @@ public class Elsafy extends JavaPlugin {
 	
 	public ConfigManager getConfigManager(){
 		return configManager;
+	}
+	
+	public BridgeManager getBridgeManager(){
+		return bridgeManager;
 	}
 	
 	public boolean isElsa(String pName){
@@ -120,6 +135,10 @@ public class Elsafy extends JavaPlugin {
 	public void removeElsa(String pName){
 		elsaList.get(pName).endElsa();
 		elsaList.remove(pName);
+	}
+	
+	public Collection<Elsa> getAllElsas(){
+		return elsaList.values();
 	}
 	
 	

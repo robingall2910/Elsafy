@@ -29,20 +29,29 @@ public class ElsaListener implements Listener {
     		return;
     	}
     	
-		if (!Elsafy.getInstance().getConfigManager().iceBlastEnabled){
-			return;
-		}
-    	
     	Player player = event.getPlayer();
     	Block block = event.getClickedBlock();
     	
     	Elsa elsa = plugin.getElsaObject(player.getName());
     	
     	if (block == null){
-    		if (event.getAction() == Action.LEFT_CLICK_AIR){
-    			elsa.callLeftClick();
-    		}else if (event.getAction() == Action.RIGHT_CLICK_AIR){
-    			elsa.callRightClick();
+    		if (player.isSneaking()){
+        		if (event.getAction() == Action.LEFT_CLICK_AIR){
+        			elsa.callLeftClickSneaking();
+        		}else if (event.getAction() == Action.RIGHT_CLICK_AIR){
+        			elsa.callRightClickSneaking();
+        		}
+    		}else if (player.getLocation().getPitch() < -89){
+    			if (event.getAction() == Action.LEFT_CLICK_AIR){
+        			elsa.callLeftClickLookingUp();
+        			return;
+    			}
+    		}else{
+        		if (event.getAction() == Action.LEFT_CLICK_AIR){
+        			elsa.callLeftClick();
+        		}else if (event.getAction() == Action.RIGHT_CLICK_AIR){
+        			elsa.callRightClick();
+        		}
     		}
     		return;
     	}
@@ -54,7 +63,11 @@ public class ElsaListener implements Listener {
     	elsa.randomIceOnInteract(block.getLocation(), false);
     	
     	if (event.getAction() == Action.LEFT_CLICK_BLOCK){
-    		elsa.callLeftClick();
+    		if (player.isSneaking()){
+    			elsa.callLeftClickSneaking();
+    		}else{
+    			elsa.callLeftClick();
+    		}
     	}
     }
     
@@ -105,11 +118,13 @@ public class ElsaListener implements Listener {
     		return;
     	}
     	
+    	if (event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
+    	
     	Elsa elsa = plugin.getElsaObject(event.getPlayer().getName());
-    	event.getPlayer().setFlying(false);
-    	if(event.isFlying() && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
-    		elsa.callDoubleClickSpace();
+    	if(event.isFlying()) {
     		event.setCancelled(true);
+    		elsa.callDoubleClickSpace();
+    		event.getPlayer().setAllowFlight(false);
     	}
     }
     

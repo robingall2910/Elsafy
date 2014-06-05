@@ -58,7 +58,7 @@ Powers:
         particleamount: 6
         #Amount of time (in seconds) a Player must wait until using CreateCastle again
         cooldown: 120
-    #By Double Right-Clicking (with an item in your hand), a snowman is built at the location you are poiting to
+    #By Double Right-Clicking (with an item in your hand), a snowman is built at the location you are looking at
     BuildSnowman:
         #Enables or Disables this feature
         enabled: true
@@ -68,5 +68,32 @@ Powers:
     SnowSwirling:
         #Enables or Disables this feature
         enabled: true
-    
-    
+    #By Holding Shift and Double Left-Clicking, a pillar of snow is brought up at the location you are looking at
+    SnowPillars:
+        #Enables or Disables this feature
+        enabled: true
+        #Enable or Disable Particles when using SnowPillars
+        particles: true
+        #If particles is enabled, this controls the amount of particles (Recommended 3-8)
+        particleamount: 6
+        #Controls the chance this power has to fail. Setting this to 0 will disable occasional misfiring
+        misfirerate: 10
+        #Build Rate (Blocks per tick [Recommended 2-6]
+        pillarbuildrate: 4
+        #Amount of time (in milliseconds) a Player must wait until using SnowPillars again
+        cooldown: 1000
+    #By Looking up and Double Left-Clicking, a burst of snow is launched into the air, forming a snowflake.
+    Snowflake:
+        #Enables or Disables this feature
+        enabled: true
+        #Amount of time (in milliseconds) a Player must wait until using Snowflake again
+        cooldown: 5000
+    #Use the command /elsafy bridge to toggle the bridge. Then, when you walk, a bridge will be formed under you.
+    #Toggle between the UP and DOWN items in your inventory to control the vertical direction of the bridge!
+    Bridge:
+        #Enables or Disables this feature
+        enabled: true
+        #Enable or Disable Particles when using Bridge
+        particles: true
+        #If particles is enabled, this controls the amount of particles (Recommended 3-8)
+        particleamount: 4

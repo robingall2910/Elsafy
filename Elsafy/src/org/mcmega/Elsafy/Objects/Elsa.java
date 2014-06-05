@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -15,12 +17,14 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
+import org.bukkit.entity.Creature;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import org.mcmega.Elsafy.Elsafy;
 import org.mcmega.Elsafy.Util;
+import org.mcmega.Elsafy.Bridge.BridgeBuilder;
 import org.mcmega.Elsafy.Castle.CastleBuilder;
 
 public class Elsa {
@@ -48,17 +52,28 @@ public class Elsa {
 	//Snowman Building
 	private long lastRightClick = 0;
 	
+	//Snow Pillars
+	private HashMap<Integer, BukkitTask> pillarTasks = new HashMap<Integer, BukkitTask>();
+	
+	//Ice Bridge
+	private BridgeBuilder bridgeBuilder;
+	public boolean isBridgeActive = false;
 	
 	//Message Cooldown
 	private long lastWaterFreezeMessage = 0;
 	private long lastInteractFreezeMessage = 0;
 	private long lastIceBlastMessage = 0;
 	private long lastSnowmanMessage = 0;
+	private long lastSnowPillarMessage = 0;
+	private long lastSnowflakeMessage = 0;
+	private long lastBridgeMessage = 0;
 	
 	//Powers Cooldown
 	private long lastIceBlast = 0;
 	private long lastCastleCreate = 0;
 	private long lastSnowmanBuild = 0;
+	private long lastSnowPillar = 0;
+	private long lastSnowflake = 0;
 	
 	//Check Flying/Offline Task
 	private BukkitTask checkTask;
@@ -121,6 +136,42 @@ public class Elsa {
 		lastRightClick = System.currentTimeMillis();
 	}
 	
+	public void callLeftClick(){
+		if (!Elsafy.getInstance().getConfigManager().iceBlastEnabled){
+			return;
+		}
+		
+		if (lastLeftClick >= System.currentTimeMillis() - 175){
+			if (lastIceBlast >= System.currentTimeMillis() - Elsafy.getInstance().getConfigManager().iceBlastCooldown){
+				return;
+			}
+			launchIceBlast();
+			lastIceBlast = System.currentTimeMillis();
+			return;
+		}
+		lastLeftClick = System.currentTimeMillis();
+	}
+
+	public void callRightClickSneaking(){
+		
+	}
+	
+	public void callLeftClickSneaking(){
+		if (!Elsafy.getInstance().getConfigManager().snowPillarsEnabled){
+			return;
+		}
+		
+		if (lastLeftClick >= System.currentTimeMillis() - 175){
+			if (lastSnowPillar >= System.currentTimeMillis() - Elsafy.getInstance().getConfigManager().snowPillarsCooldown){
+				return;
+			}
+			launchSnowPillar();
+			lastSnowPillar = System.currentTimeMillis();
+			return;
+		}
+		lastLeftClick = System.currentTimeMillis();
+	}
+	
 	public void callDoubleClickSpace(){
 		if (!Elsafy.getInstance().getConfigManager().createCastleEnabled){
 			return;
@@ -157,30 +208,71 @@ public class Elsa {
 		}
 	}
 	
-	public void callLeftClick(){
-		if (!Elsafy.getInstance().getConfigManager().iceBlastEnabled){
+	public void callLeftClickLookingUp(){
+		if (!Elsafy.getInstance().getConfigManager().snowflakeEnabled){
 			return;
 		}
 		
 		if (lastLeftClick >= System.currentTimeMillis() - 175){
-			if (lastIceBlast >= System.currentTimeMillis() - Elsafy.getInstance().getConfigManager().iceBlastCooldown){
+			if (lastSnowflake >= System.currentTimeMillis() - Elsafy.getInstance().getConfigManager().snowflakeCooldown){
 				return;
 			}
-			launchIceBlast();
-			lastIceBlast = System.currentTimeMillis();
+			launchSnowflake();
+			lastSnowflake = System.currentTimeMillis();
 			return;
 		}
 		lastLeftClick = System.currentTimeMillis();
 	}
 	
+	private void launchSnowPillar(){
+		int misfire = Elsafy.getInstance().getConfigManager().snowPillarsMisfireRate;
+		if (misfire > 0){
+			Random randomGenerator = new Random();
+			int chance = randomGenerator.nextInt(100);
+			if (misfire > chance){
+				Player player = Bukkit.getPlayer(pName);
+				if (Elsafy.getInstance().getConfigManager().snowPillarParticles && player != null){
+					if (Elsafy.getInstance().isSpigot()){
+						player.getWorld().spigot().playEffect(player.getEyeLocation(), Effect.VILLAGER_THUNDERCLOUD, 0, 0, 0, 0, 0, 1, 7, 150);
+						player.getWorld().playEffect(player.getEyeLocation(), Effect.CLICK1, 0);
+					}else{
+						player.getWorld().playEffect(player.getEyeLocation(), Effect.SMOKE, 0);
+						player.getWorld().playEffect(player.getEyeLocation(), Effect.CLICK1, 0);
+					}
+				}
+				return;
+			}
+		}
+		
+		new IceBall(this, LaunchType.SNOW_PILLAR);
+		if (lastSnowPillarMessage <= System.currentTimeMillis() - 60000){
+			Player player = Bukkit.getPlayer(pName);
+			if (player != null){
+				player.sendMessage(ChatColor.DARK_AQUA + "Catch me Elsa! Catch me!");
+			}
+			lastSnowPillarMessage = System.currentTimeMillis();
+		}
+	}
+	
 	private void launchIceBlast(){
-		new IceArrow(this);
+		new IceBall(this, LaunchType.ICE_BLAST);
 		if (lastIceBlastMessage <= System.currentTimeMillis() - 60000){
 			Player player = Bukkit.getPlayer(pName);
 			if (player != null){
 				player.sendMessage(ChatColor.DARK_AQUA + "YOU MONSTER!!! Beware your ice magic!");
 			}
 			lastIceBlastMessage = System.currentTimeMillis();
+		}
+	}
+	
+	private void launchSnowflake(){
+		new IceBall(this, LaunchType.SNOWFLAKE);
+		if (lastSnowflakeMessage <= System.currentTimeMillis() - 60000){
+			Player player = Bukkit.getPlayer(pName);
+			if (player != null){
+				player.sendMessage(ChatColor.DARK_AQUA + "There is beauty in it... but also great danger!");
+			}
+			lastSnowflakeMessage = System.currentTimeMillis();
 		}
 	}
 	
@@ -191,7 +283,7 @@ public class Elsa {
 			return;
 		}
 		Location targetLoc = targetBlock.getLocation();
-		targetLoc.add(new Vector(0,1,0));
+		targetLoc.clone().add(new Vector(0,1,0));
 		for (BlockFace face : BlockFace.values()){
 			Location effectLoc = targetLoc.getBlock().getRelative(face).getLocation();
 			if (Elsafy.getInstance().isSpigot()){
@@ -201,7 +293,8 @@ public class Elsa {
 			}
 			
 		}
-		player.getWorld().spawnEntity(targetLoc, EntityType.SNOWMAN);
+		Creature c = (Creature) player.getWorld().spawnEntity(targetLoc, EntityType.SNOWMAN);
+		c.setCustomName(ChatColor.DARK_AQUA + "Olaf");
 		
 		if (lastSnowmanMessage <= System.currentTimeMillis() - 60000){
 			if (player != null){
@@ -222,7 +315,10 @@ public class Elsa {
 			for (int i=0; i <= iceSpread; i++){
 				if (i == 0){
 					changedBlocks.put(iceLocation, new HashSet<BlockState>());
-					changedBlocks.get(iceLocation).add(iceLocation.getBlock().getState());
+					//Fix for leftover ice
+					if (iceLocation.getBlock().getType() != Material.ICE){
+						changedBlocks.get(iceLocation).add(iceLocation.getBlock().getState());
+					}
 					iceLocation.getBlock().setType(Material.ICE);
 					for (BlockFace face : BlockFace.values()){
 						if (face == BlockFace.SELF){
@@ -245,7 +341,10 @@ public class Elsa {
 							checkLocations.remove(testLocation);
 							continue;
 						}else{
-							changedBlocks.get(iceLocation).add(testLocation.getBlock().getState());
+							//Fix for leftover ice
+							if (testLocation.getBlock().getType() != Material.ICE){
+								changedBlocks.get(iceLocation).add(testLocation.getBlock().getState());
+							}
 							testLocation.getBlock().setType(Material.ICE);
 							checkLocations.remove(testLocation);
 							icedLocations.add(testLocation);
@@ -298,6 +397,86 @@ public class Elsa {
 			lastWaterFreezeMessage = System.currentTimeMillis();
 		}
 		startIceSpread();
+	}
+	
+	public void buildSnowPillar(final Location location){
+		Random randomGenerator = new Random();
+		int height = randomGenerator.nextInt(10) + 1;
+		double radius = randomGenerator.nextInt(2) + 2;
+		
+		final Queue<Location> toSnow = new ConcurrentLinkedQueue<Location>();
+		
+		//Use WorldEdit Algorithm to generate a cylinder
+		toSnow.addAll(Util.makeCylinder(location, 1, radius + 1));
+		toSnow.addAll(Util.makeCylinder(location.clone().add(0, 1, 0), height, radius));
+		//Use WorldEdit Algorithm to generate a sphere top of the cylinder
+		toSnow.addAll(Util.makeSphere(location.clone().add(0, height, 0), radius));
+		
+		int taskID = 0;
+		for (int id : pillarTasks.keySet()){
+			if (taskID == id){
+				taskID++;
+				continue;
+			}
+		}
+		final int finalTaskID = taskID;
+		BukkitTask pillarTask = Bukkit.getScheduler().runTaskTimer(Elsafy.getInstance(), new Runnable(){
+
+			@Override
+			public void run() {
+				int bps = Elsafy.getInstance().getConfigManager().snowPillarsBuildRate;
+				for (int i=0; i < bps; i++){
+					Location freezeLoc = toSnow.poll();
+					Block block = freezeLoc.getBlock();
+					if (block.getType() != Material.SNOW_BLOCK){
+						if (changedBlocks.containsKey(location)){
+							changedBlocks.get(location).add(block.getState());
+						}else{
+							changedBlocks.put(location, new HashSet<BlockState>());
+							changedBlocks.get(location).add(block.getState());
+						}
+					}
+					block.setType(Material.SNOW_BLOCK);
+					if (Elsafy.getInstance().getConfigManager().snowPillarParticles){
+						if (Elsafy.getInstance().isSpigot()){
+							block.getWorld().spigot().playEffect(new Location(block.getWorld(), block.getX(), block.getY(), block.getZ()), Effect.CLOUD, 0, 0, 0, 0, 0, 1, 2, 150);
+						}else{
+							block.getWorld().playEffect(new Location(block.getWorld(), block.getX(), block.getY(), block.getZ()), Effect.SMOKE, 0);
+						}
+					}
+					
+					if (toSnow.isEmpty()){
+						cancelSnowPillarTask(finalTaskID, false);
+						break;
+					}
+				}
+			}
+			
+		}, 1, 1);
+		pillarTasks.put(taskID, pillarTask);
+		
+	}
+	
+	public void enableIceBridge(){
+		bridgeBuilder = new BridgeBuilder(this);
+		isBridgeActive = true;
+		if (lastBridgeMessage <= System.currentTimeMillis() - 60000){
+			Player player = Bukkit.getPlayer(pName);
+			if (player != null){
+				player.sendMessage(ChatColor.DARK_AQUA + "You are one with the wind and sky!!");
+			}
+			lastBridgeMessage = System.currentTimeMillis();
+		}
+	}
+	
+	public void disableIceBridge(){
+		bridgeBuilder.endBridge();
+		bridgeBuilder = null;
+		isBridgeActive = false;
+	}
+	
+	public BridgeBuilder getBridgeBuilder(){
+		return bridgeBuilder;
 	}
 	
 	private void startIceSpread(){
@@ -410,10 +589,28 @@ public class Elsa {
 		}
 	}
 	
+	private void cancelSnowPillarTask(int taskID, boolean cancelAll){
+		if (cancelAll){
+			for (BukkitTask task : pillarTasks.values()){
+				task.cancel();
+			}
+			return;
+		}else{
+			if (pillarTasks.containsKey(taskID)){
+				pillarTasks.get(taskID).cancel();
+				pillarTasks.remove(taskID);
+			}
+		}
+	}
+	
 	public void endElsa(){
 		cancelIceRemovalTask();
 		cancelIceSpreadTask();
 		cancelSnowSwirlingTask();
+		cancelSnowPillarTask(0, true);
+		if (isBridgeActive){
+			disableIceBridge();
+		}
 		for (Location loc : changedBlocks.keySet()){
 			for (BlockState state : changedBlocks.get(loc)){
 				state.update(true);

@@ -63,7 +63,7 @@ public class CastleBuilder {
 		}
 		
 		Vector size = cc.getSize();
-		final Location loc1 = player.getLocation();
+		final Location loc1 = player.getLocation().clone();
 		Vector offset = cc.getOffset();
 		loc1.add(new org.bukkit.util.Vector(offset.getBlockX(), offset.getBlockY(), offset.getBlockZ()));
 		
@@ -133,10 +133,13 @@ public class CastleBuilder {
 					
 					try {
 						session.setBlock(bb.getVector(), bb.getBlock());
-						if (Elsafy.getInstance().isSpigot()){
-							loc1.getWorld().spigot().playEffect(new Location(loc1.getWorld(), bb.getVector().getBlockX(), bb.getVector().getBlockY(), bb.getVector().getBlockZ()), Effect.CLOUD, 0, 0, 0, 0, 0, 1, 4, 150);
-						}else{
-							loc1.getWorld().playEffect(new Location(loc1.getWorld(), bb.getVector().getBlockX(), bb.getVector().getBlockY(), bb.getVector().getBlockZ()), Effect.SMOKE, 0);
+						
+						if (bb.getBlock().getId() != 0){
+							if (Elsafy.getInstance().isSpigot()){
+								loc1.getWorld().spigot().playEffect(new Location(loc1.getWorld(), bb.getVector().getBlockX(), bb.getVector().getBlockY(), bb.getVector().getBlockZ()), Effect.CLOUD, 0, 0, 0, 0, 0, 1, 4, 150);
+							}else{
+								loc1.getWorld().playEffect(new Location(loc1.getWorld(), bb.getVector().getBlockX(), bb.getVector().getBlockY(), bb.getVector().getBlockZ()), Effect.SMOKE, 0);
+							}
 						}
 						
 					} catch (MaxChangedBlocksException e) {
