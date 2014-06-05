@@ -97,3 +97,21 @@ Powers:
         particles: true
         #If particles is enabled, this controls the amount of particles (Recommended 3-8)
         particleamount: 4
+#Adjusts settings for the Rollback engine. WARNING: Don't know what these settings mean? Don't touch em.
+Rollback:
+    #Enable or Disable the Rollback Engine
+    enabled: true
+    #Powers Enabled here will rollback over time (Supported: FreezeOnInteract, IceBlast, SnowPillars)
+    RollbackOverTime:
+        FreezeOnInteract: true
+        IceBlast: true
+        SnowPillars: true
+    #Powers Enabled here will rollback when a player disables their Elsafy or the server stops (Supported: FreezeWater, CreateCastle, Bridge)
+    RollbackAtEnd:
+        FreezeWater: false
+        CreateCastle: false
+        Bridge: false
+    #Maximum block rollbacks per run (only affects rollback over time)
+    MaxBlockChangesPerRun: 500
+    #Time (in ticks) per rollback run (only affects rollback over time)
+    TimePerRun: 10

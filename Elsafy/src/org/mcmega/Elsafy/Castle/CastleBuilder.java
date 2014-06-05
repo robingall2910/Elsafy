@@ -132,6 +132,9 @@ public class CastleBuilder {
 					}
 					
 					try {
+						if (Elsafy.getInstance().getConfigManager().rollbackECreateCastle){
+							elsa.getElsaRollback().addEndNotWaterBlock(bb.getBukkitBlockState(loc1.getWorld()));
+						}
 						session.setBlock(bb.getVector(), bb.getBlock());
 						
 						if (bb.getBlock().getId() != 0){

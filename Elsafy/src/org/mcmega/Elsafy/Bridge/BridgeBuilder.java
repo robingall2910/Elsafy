@@ -212,6 +212,29 @@ public class BridgeBuilder extends BukkitRunnable {
 			vector = newVector;
 			//System.out.println("After Down Fix:  x:" + vector.getBlockX() + " y:" + vector.getBlockY() + " z:" + vector.getBlockZ());
 		}
+		
+		
+		//Log all blocks to rollback
+		if (Elsafy.getInstance().getConfigManager().rollbackEBridge){
+			for (int x=0; x < cc.getWidth(); x++){
+				for (int y=0; y < cc.getHeight(); y++){
+					for (int z=0; z < cc.getLength(); z++){
+						com.sk89q.worldedit.Vector snowVector = new com.sk89q.worldedit.Vector(x, y, z);
+						if (cc.getBlock(snowVector).getType() == Material.AIR.getId()){
+							continue;
+						}
+						Location snowLoc = BukkitUtil.toLocation(location.getWorld(), snowVector.add(vector).add(cc.getOffset()));
+						Material mat = snowLoc.getBlock().getType();
+						if (mat == Material.SNOW_BLOCK || mat == Material.ICE){
+							continue;
+						}
+						elsa.getElsaRollback().addEndNotWaterBlock(snowLoc.getBlock().getState());
+					}
+				}
+			}
+		}
+		
+		//Paste Schematic
 		vector.add(cc.getOffset());
 		try {
 			cc.paste(new EditSession(new BukkitWorld(location.getWorld()), -1), vector, false);
@@ -228,7 +251,7 @@ public class BridgeBuilder extends BukkitRunnable {
 			nextRequiredPlaceLocation = nextRequiredPlaceLocation + 3;
 		}
 		
-		
+		//Save all snow blocks for completion
 		for (int x=0; x < cc.getWidth(); x++){
 			for (int y=0; y < cc.getHeight(); y++){
 				for (int z=0; z < cc.getLength(); z++){

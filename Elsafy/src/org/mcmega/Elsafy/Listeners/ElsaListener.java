@@ -1,5 +1,6 @@
 package org.mcmega.Elsafy.Listeners;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -113,7 +114,7 @@ public class ElsaListener implements Listener {
     }
     
     @EventHandler
-    public void onFlightAttempt(PlayerToggleFlightEvent event) {
+    public void onFlightAttempt(final PlayerToggleFlightEvent event) {
     	if (!plugin.isElsa(event.getPlayer().getName())){
     		return;
     	}
@@ -125,6 +126,16 @@ public class ElsaListener implements Listener {
     		event.setCancelled(true);
     		elsa.callDoubleClickSpace();
     		event.getPlayer().setAllowFlight(false);
+    		Bukkit.getScheduler().runTaskLater(plugin, new Runnable(){
+
+				@Override
+				public void run() {
+					if (event.getPlayer() != null){
+						event.getPlayer().setAllowFlight(true);
+					}
+				}
+    			
+    		}, plugin.getConfigManager().createCastleCooldown / 20);
     	}
     }
     

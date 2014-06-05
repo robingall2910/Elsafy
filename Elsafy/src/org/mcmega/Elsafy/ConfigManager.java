@@ -57,6 +57,16 @@ public class ConfigManager {
 	public boolean bridgeParticles;
 	public int bridgeParticleCount;
 	
+	//Rollback
+	public boolean rollbackEnabled;
+	public boolean rollbackOTFreezeOnInteract;
+	public boolean rollbackOTIceBlast;
+	public boolean rollbackOTSnowPillars;
+	public boolean rollbackEFreezeWater;
+	public boolean rollbackECreateCastle;
+	public boolean rollbackEBridge;
+	public int rollbackTicksPerRun;
+	
     public boolean load(Elsafy plugin) {
         if (plugin == null) {
             return false;
@@ -88,6 +98,9 @@ public class ConfigManager {
         snowPillar(mainSection);
         snowflake(mainSection);
         bridge(mainSection);
+        
+        //Parse Rollback Settings
+        rollback(config.getConfigurationSection("Rollback"));
         
         return true;
     }
@@ -164,6 +177,21 @@ public class ConfigManager {
 		this.bridgeEnabled = bSection.getBoolean("enabled", true);
 		this.bridgeParticles = bSection.getBoolean("particles", true);
 		this.bridgeParticleCount = bSection.getInt("particleamount", 4);
+	}
+	
+	private void rollback(ConfigurationSection rollbackSection){
+		this.rollbackEnabled = rollbackSection.getBoolean("enabled", true);
+		this.rollbackTicksPerRun = rollbackSection.getInt("TimePerRun", 10);
+		
+		ConfigurationSection rotSection = rollbackSection.getConfigurationSection("RollbackOverTime");
+		this.rollbackOTFreezeOnInteract = rotSection.getBoolean("FreezeOnInteract", true);
+		this.rollbackOTIceBlast = rotSection.getBoolean("IceBlast", true);
+		this.rollbackOTSnowPillars = rotSection.getBoolean("SnowPillars", true);
+		
+		ConfigurationSection endSection = rollbackSection.getConfigurationSection("RollbackAtEnd");
+		this.rollbackEFreezeWater = endSection.getBoolean("FreezeWater", false);
+		this.rollbackECreateCastle = endSection.getBoolean("CreateCastle", false);
+		this.rollbackEBridge = endSection.getBoolean("Bridge", false);
 	}
 	
 }

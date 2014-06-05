@@ -26,14 +26,18 @@ import org.mcmega.Elsafy.Elsafy;
 import org.mcmega.Elsafy.Util;
 import org.mcmega.Elsafy.Bridge.BridgeBuilder;
 import org.mcmega.Elsafy.Castle.CastleBuilder;
+import org.mcmega.Elsafy.Rollback.ElsaRollback;
 
 public class Elsa {
 	
 	private String pName;
 	
+	//Elsa Rollback
+	private ElsaRollback elsaRollback;
+	
 	//Ice Interact
-	private HashMap<Location, HashSet<BlockState>> changedBlocks = new HashMap<Location, HashSet<BlockState>>();
-	private BukkitTask iceRemovalTask = null;
+	//private HashMap<Location, HashSet<BlockState>> changedBlocks = new HashMap<Location, HashSet<BlockState>>();
+	//private BukkitTask iceRemovalTask = null;
 	
 	//Walk on Ice
 	private HashSet<Location> locationsToIce = new HashSet<Location>();
@@ -75,9 +79,6 @@ public class Elsa {
 	private long lastSnowPillar = 0;
 	private long lastSnowflake = 0;
 	
-	//Check Flying/Offline Task
-	private BukkitTask checkTask;
-	
 	public Elsa(final String pName){
 		this.pName = pName;
 		
@@ -85,20 +86,7 @@ public class Elsa {
 			snowTask = new SnowSwirlingTask(this);
 		}
 		
-		checkTask = Bukkit.getScheduler().runTaskTimer(Elsafy.getInstance(), new Runnable(){
-
-			@Override
-			public void run() {
-				Player player = Bukkit.getPlayer(pName);
-				if (player != null){
-					player.setAllowFlight(true);
-				}else{
-					Elsafy.getInstance().removeElsa(pName);
-					checkTask.cancel();
-				}
-				
-			}
-		}, 300, 300);
+		elsaRollback = new ElsaRollback(this);
 	}
 	
 	public String getElsaName(){
@@ -114,6 +102,10 @@ public class Elsa {
 			buildTask.cancel();
 			buildTask = null;
 		}
+	}
+	
+	public ElsaRollback getElsaRollback(){
+		return elsaRollback;
 	}
 	
 	public void callRightClick(){
@@ -314,10 +306,13 @@ public class Elsa {
 			int iceSpread = randomGenerator.nextInt(Elsafy.getInstance().getConfigManager().freezeOnInteractRadius + 1);
 			for (int i=0; i <= iceSpread; i++){
 				if (i == 0){
-					changedBlocks.put(iceLocation, new HashSet<BlockState>());
+					//changedBlocks.put(iceLocation, new HashSet<BlockState>());
 					//Fix for leftover ice
 					if (iceLocation.getBlock().getType() != Material.ICE){
-						changedBlocks.get(iceLocation).add(iceLocation.getBlock().getState());
+						if (Elsafy.getInstance().getConfigManager().rollbackOTFreezeOnInteract){
+							elsaRollback.addBlock(iceLocation, iceLocation.getBlock().getState());
+						}
+						//changedBlocks.get(iceLocation).add(iceLocation.getBlock().getState());
 					}
 					iceLocation.getBlock().setType(Material.ICE);
 					for (BlockFace face : BlockFace.values()){
@@ -343,7 +338,10 @@ public class Elsa {
 						}else{
 							//Fix for leftover ice
 							if (testLocation.getBlock().getType() != Material.ICE){
-								changedBlocks.get(iceLocation).add(testLocation.getBlock().getState());
+								//changedBlocks.get(iceLocation).add(testLocation.getBlock().getState());
+								if (Elsafy.getInstance().getConfigManager().rollbackOTFreezeOnInteract){
+									elsaRollback.addBlock(iceLocation, testLocation.getBlock().getState());
+								}
 							}
 							testLocation.getBlock().setType(Material.ICE);
 							checkLocations.remove(testLocation);
@@ -371,7 +369,6 @@ public class Elsa {
 				}
 				lastInteractFreezeMessage = System.currentTimeMillis();
 			}
-			startIceRemoval();
 		}
 	}
 	
@@ -388,6 +385,9 @@ public class Elsa {
 			if (testBlock.getType() != Material.WATER && testBlock.getType() != Material.STATIONARY_WATER && testBlock.getType() != Material.PACKED_ICE){
 				continue;
 			}else{
+				if (Elsafy.getInstance().getConfigManager().rollbackEFreezeWater){
+					elsaRollback.addWaterBlock(testBlock.getLocation());
+				}
 				testBlock.setType(Material.PACKED_ICE);
 				locationsToIce.add(testBlock.getLocation());
 			}
@@ -429,11 +429,14 @@ public class Elsa {
 					Location freezeLoc = toSnow.poll();
 					Block block = freezeLoc.getBlock();
 					if (block.getType() != Material.SNOW_BLOCK){
-						if (changedBlocks.containsKey(location)){
+						/*if (changedBlocks.containsKey(location)){
 							changedBlocks.get(location).add(block.getState());
 						}else{
 							changedBlocks.put(location, new HashSet<BlockState>());
 							changedBlocks.get(location).add(block.getState());
+						}*/
+						if (Elsafy.getInstance().getConfigManager().rollbackOTSnowPillars){
+							elsaRollback.addBlock(location, block.getState());
 						}
 					}
 					block.setType(Material.SNOW_BLOCK);
@@ -506,6 +509,9 @@ public class Elsa {
 				}
 				
 				for (Location loc : freezeSession){
+					if (Elsafy.getInstance().getConfigManager().rollbackEFreezeWater){
+						elsaRollback.addWaterBlock(loc);
+					}
 					loc.getBlock().setType(Material.PACKED_ICE);
 					locationsToIce.remove(loc);
 					for (BlockFace face : BlockFace.values()){
@@ -526,53 +532,6 @@ public class Elsa {
 			}
 			
 		}, 5, 1);
-	}
-	
-	private void startIceRemoval(){
-		if (iceRemovalTask != null){
-			return;
-		}
-		iceRemovalTask = Bukkit.getScheduler().runTaskTimer(Elsafy.getInstance(), new Runnable(){
-
-			@Override
-			public void run() {
-				Set<Location> iceLocationsCloned = new HashSet<Location>();
-				iceLocationsCloned.addAll(changedBlocks.keySet());
-				
-				for (Location iceLocation : iceLocationsCloned){
-					HashSet<BlockState> blocks = changedBlocks.get(iceLocation);
-					if (blocks.size() == 0){
-						changedBlocks.remove(iceLocation);
-						cancelIceRemovalTask();
-						continue;
-					}else{
-						BlockState maxDistanceBlock = null;
-						double maxDistance = -1;
-						for (BlockState state : blocks){
-							double distance = state.getLocation().distance(iceLocation);
-							if (distance > maxDistance){
-								maxDistanceBlock = state;
-								maxDistance = distance;
-							}
-						}
-						if (maxDistanceBlock != null){
-							maxDistanceBlock.update(true);
-							blocks.remove(maxDistanceBlock);
-						}
-						
-					}
-				}
-				
-			}
-			
-		}, 200, 10);
-	}
-	
-	private void cancelIceRemovalTask(){
-		if (iceRemovalTask != null){
-			iceRemovalTask.cancel();
-			iceRemovalTask = null;
-		}
 	}
 	
 	private void cancelIceSpreadTask(){
@@ -604,18 +563,13 @@ public class Elsa {
 	}
 	
 	public void endElsa(){
-		cancelIceRemovalTask();
 		cancelIceSpreadTask();
 		cancelSnowSwirlingTask();
 		cancelSnowPillarTask(0, true);
 		if (isBridgeActive){
 			disableIceBridge();
 		}
-		for (Location loc : changedBlocks.keySet()){
-			for (BlockState state : changedBlocks.get(loc)){
-				state.update(true);
-			}
-		}
+		elsaRollback.end();
 	}
 
 }
