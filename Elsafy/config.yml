@@ -111,7 +111,5 @@ Rollback:
         FreezeWater: false
         CreateCastle: false
         Bridge: false
-    #Maximum block rollbacks per run (only affects rollback over time)
-    MaxBlockChangesPerRun: 500
-    #Time (in ticks) per rollback run (only affects rollback over time)
+    #Time (in ticks) per rollback run (only affects rollback over time,,, this affects speed of rollback [lower=faster])
     TimePerRun: 10

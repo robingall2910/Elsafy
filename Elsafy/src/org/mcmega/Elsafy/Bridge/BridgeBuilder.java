@@ -59,22 +59,36 @@ public class BridgeBuilder extends BukkitRunnable {
 			if (currentBridgeDirection == BlockFace.NORTH){
 				//Z Decreasing
 				staticPlaceLocation = pLoc.getBlockX();
-				nextRequiredPlaceLocation = pLoc.getBlockZ();
+				nextRequiredPlaceLocation = pLoc.getBlockZ() + 1;
 			}else if (currentBridgeDirection == BlockFace.EAST){
 				//X Increasing
 				staticPlaceLocation = pLoc.getBlockZ();
-				nextRequiredPlaceLocation = pLoc.getBlockX();
+				nextRequiredPlaceLocation = pLoc.getBlockX() -1;
 			}else if (currentBridgeDirection == BlockFace.SOUTH){
 				//Z Increasing
 				staticPlaceLocation = pLoc.getBlockX();
-				nextRequiredPlaceLocation = pLoc.getBlockZ();
+				nextRequiredPlaceLocation = pLoc.getBlockZ() - 1;
 			}else if (currentBridgeDirection == BlockFace.WEST){
 				//X Decreasing
 				staticPlaceLocation = pLoc.getBlockZ();
-				nextRequiredPlaceLocation = pLoc.getBlockX();
+				nextRequiredPlaceLocation = pLoc.getBlockX() + 1;
 			}
 			
-			setBridge(player.getLocation(), false);
+			setBridge(player.getLocation(), false, true);
+			//Bridge 2
+			if (currentBridgeDirection == BlockFace.NORTH){
+				//Z Decreasing
+				setBridge(new Location(pLoc.getWorld(), staticPlaceLocation, lastYValue, nextRequiredPlaceLocation - 2), false, false);
+			}else if (currentBridgeDirection == BlockFace.EAST){
+				//X Increasing
+				setBridge(new Location(pLoc.getWorld(), nextRequiredPlaceLocation + 2, lastYValue, staticPlaceLocation), false, false);
+			}else if (currentBridgeDirection == BlockFace.SOUTH){
+				//Z Increasing
+				setBridge(new Location(pLoc.getWorld(), staticPlaceLocation, lastYValue, nextRequiredPlaceLocation + 2), false, false);
+			}else if (currentBridgeDirection == BlockFace.WEST){
+				//X Decreasing
+				setBridge(new Location(pLoc.getWorld(), nextRequiredPlaceLocation - 2, lastYValue, staticPlaceLocation), false, false);
+			}
 			
 			List<ItemStack> itemsToMove = new ArrayList<ItemStack>();
 			itemsToMove.add(player.getInventory().getItem(0));
@@ -147,41 +161,41 @@ public class BridgeBuilder extends BukkitRunnable {
 		if (currentBridgeDirection == BlockFace.NORTH){
 			//Z Decreasing
 			if (pLoc.getBlockZ() < nextRequiredPlaceLocation){
-				setBridge(new Location(pLoc.getWorld(), staticPlaceLocation, lastYValue, nextRequiredPlaceLocation - 2), false);
+				setBridge(new Location(pLoc.getWorld(), staticPlaceLocation, lastYValue, nextRequiredPlaceLocation - 6), false, true);
 			}
 		}else if (currentBridgeDirection == BlockFace.EAST){
 			//X Increasing
 			if (pLoc.getBlockX() > nextRequiredPlaceLocation){
-				setBridge(new Location(pLoc.getWorld(), nextRequiredPlaceLocation + 2, lastYValue, staticPlaceLocation), false);
+				setBridge(new Location(pLoc.getWorld(), nextRequiredPlaceLocation + 6, lastYValue, staticPlaceLocation), false, true);
 			}
 		}else if (currentBridgeDirection == BlockFace.SOUTH){
 			//Z Increasing
 			if (pLoc.getBlockZ() > nextRequiredPlaceLocation){
-				setBridge(new Location(pLoc.getWorld(), staticPlaceLocation, lastYValue, nextRequiredPlaceLocation + 2), false);
+				setBridge(new Location(pLoc.getWorld(), staticPlaceLocation, lastYValue, nextRequiredPlaceLocation + 6), false, true);
 			}
 		}else if (currentBridgeDirection == BlockFace.WEST){
 			//X Decreasing
 			if (pLoc.getBlockX() < nextRequiredPlaceLocation){
-				setBridge(new Location(pLoc.getWorld(), nextRequiredPlaceLocation - 2, lastYValue, staticPlaceLocation), false);
+				setBridge(new Location(pLoc.getWorld(), nextRequiredPlaceLocation - 6, lastYValue, staticPlaceLocation), false, true);
 			}
 		}
 		checkForCompletion(pLoc);
 	}
 	
 	@SuppressWarnings("deprecation")
-	private void setBridge(Location location, boolean ignoreElevation){
+	private void setBridge(Location location, boolean ignoreElevation, boolean updateNextPlaceLoc){
 		if (!ignoreElevation){
 			//Adjust Y Position and Place flat bridge piece
 			if (nextBridgeElevation == BlockFace.UP){
 				lastYValue = lastYValue + 2;
 				Location newLoc = location.clone();
 				newLoc.add(new Vector(currentBridgeDirection.getModX() * 3, 2, currentBridgeDirection.getModZ() * 3));
-				setBridge(newLoc, true);
+				setBridge(newLoc, true, true);
 			}else if (nextBridgeElevation == BlockFace.DOWN){
 				lastYValue = lastYValue - 2;
 				Location newLoc = location.clone();
-				newLoc.add(new Vector(currentBridgeDirection.getModX() * 2, -2, currentBridgeDirection.getModZ() * 2));
-				setBridge(newLoc, true);
+				newLoc.add(new Vector(currentBridgeDirection.getModX() * 3, -2, currentBridgeDirection.getModZ() * 3));
+				setBridge(newLoc, true, true);
 			}
 		}
 		
@@ -208,7 +222,7 @@ public class BridgeBuilder extends BukkitRunnable {
 		if (nextBridgeElevation == BlockFace.DOWN && !ignoreElevation){
 			//System.out.println("Running Down Fix");
 			//System.out.println("Before Down Fix:  x:" + vector.getBlockX() + " y:" + vector.getBlockY() + " z:" + vector.getBlockZ());
-			com.sk89q.worldedit.Vector newVector = vector.add(currentBridgeDirection.getModX() * 2, -2, currentBridgeDirection.getModZ() * 2);
+			com.sk89q.worldedit.Vector newVector = vector.add(currentBridgeDirection.getModX() * 3, -2, currentBridgeDirection.getModZ() * 3);
 			vector = newVector;
 			//System.out.println("After Down Fix:  x:" + vector.getBlockX() + " y:" + vector.getBlockY() + " z:" + vector.getBlockZ());
 		}
@@ -225,7 +239,7 @@ public class BridgeBuilder extends BukkitRunnable {
 						}
 						Location snowLoc = BukkitUtil.toLocation(location.getWorld(), snowVector.add(vector).add(cc.getOffset()));
 						Material mat = snowLoc.getBlock().getType();
-						if (mat == Material.SNOW_BLOCK || mat == Material.ICE){
+						if (mat == Material.SNOW_BLOCK || mat == Material.ICE || mat == Material.STEP){
 							continue;
 						}
 						elsa.getElsaRollback().addEndNotWaterBlock(snowLoc.getBlock().getState());
@@ -242,13 +256,15 @@ public class BridgeBuilder extends BukkitRunnable {
 			//Will never happen
 		}
 		
-		//Adjust next required position by 3 blocks
-		if (currentBridgeDirection == BlockFace.NORTH || currentBridgeDirection == BlockFace.WEST){
-			//Z Decreasing
-			nextRequiredPlaceLocation = nextRequiredPlaceLocation - 3;
-		}else if (currentBridgeDirection == BlockFace.EAST || currentBridgeDirection == BlockFace.SOUTH){
-			//X Increasing
-			nextRequiredPlaceLocation = nextRequiredPlaceLocation + 3;
+		if (updateNextPlaceLoc){
+			//Adjust next required position by 3 blocks
+			if (currentBridgeDirection == BlockFace.NORTH || currentBridgeDirection == BlockFace.WEST){
+				//Z Decreasing
+				nextRequiredPlaceLocation = nextRequiredPlaceLocation - 3;
+			}else if (currentBridgeDirection == BlockFace.EAST || currentBridgeDirection == BlockFace.SOUTH){
+				//X Increasing
+				nextRequiredPlaceLocation = nextRequiredPlaceLocation + 3;
+			}
 		}
 		
 		//Save all snow blocks for completion

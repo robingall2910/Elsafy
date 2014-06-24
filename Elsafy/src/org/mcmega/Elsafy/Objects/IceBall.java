@@ -92,7 +92,7 @@ public class IceBall extends BukkitRunnable {
 		
 		//Snowflake when velocity is moving downward
 		if (type == LaunchType.SNOWFLAKE){
-			if (ball.getVelocity().getY() <= 0){
+			if (ball.getVelocity().getY() <= 0 || ball.isDead()){
 				for (BlockFace face : BlockFace.values()){
 					Location effectLoc = loc.getBlock().getRelative(face).getLocation();
 					//arrow.getWorld().playEffect(arrow.getLocation(), Effect.SNOWBALL_BREAK, 0);

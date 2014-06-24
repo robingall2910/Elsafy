@@ -1,8 +1,12 @@
 package org.mcmega.Elsafy.Rollback;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -19,6 +23,8 @@ public class ElsaRollback {
 	private HashSet<BlockState> endBlocks = new HashSet<BlockState>();
 	
 	private BukkitTask rollbackTask = null;
+	
+	private BukkitTask endRollbackTask;
 	
 	public ElsaRollback(Elsa elsa) {
 		if (!Elsafy.getInstance().getConfigManager().rollbackEnabled){
@@ -94,7 +100,77 @@ public class ElsaRollback {
 		}
 	}
 	
+	public List<BlockState> getBlockStates(){
+		List<BlockState> states = new ArrayList<BlockState>();
+		
+		for (Location iceLocation : changedBlocks.keySet()){
+			states.addAll(changedBlocks.get(iceLocation));
+		}
+		states.addAll(endBlocks);
+		
+		return states;
+	}
+	
+	public HashSet<Location> getWaterLocations(){
+		return waterBlocks;
+	}
+	
 	public void end(){
+		endRollbackTask();
+		
+		final Queue<BlockState> states = new ConcurrentLinkedQueue<BlockState>();
+		final Queue<Location> waterLocs = new ConcurrentLinkedQueue<Location>();
+		
+		Bukkit.getScheduler().runTaskAsynchronously(Elsafy.getInstance(), new Runnable(){
+
+			@Override
+			public void run() {
+				states.addAll(getBlockStates());
+				waterLocs.addAll(getWaterLocations());
+				getBlockStates().clear();
+				getWaterLocations().clear();
+				
+				endRollbackTask = Bukkit.getScheduler().runTaskTimer(Elsafy.getInstance(), new Runnable(){
+
+					@Override
+					public void run() {
+						if (states.isEmpty() && waterLocs.isEmpty()){
+							endRollbackTask.cancel();
+						}
+						
+						for (int i=0; i < 100; i++){
+							if (states.isEmpty()){
+								break;
+							}
+							states.poll().update(true);
+						}
+						for (int l=0; l < 100; l++){
+							if (waterLocs.isEmpty()){
+								break;
+							}
+							waterLocs.poll().getBlock().setType(Material.WATER);
+						}
+					}
+					
+				}, 20, 20);
+			}
+			
+		});
+		
+		for (Location iceLocation : changedBlocks.keySet()){
+			for (BlockState state : changedBlocks.get(iceLocation)){
+				state.update(true);
+			}
+		}
+		for (Location location : waterBlocks){
+			location.getBlock().setType(Material.WATER);
+		}
+		for (BlockState state : endBlocks){
+			state.update(true);
+		}
+	}
+	
+	public void forceEnd(){
 		endRollbackTask();
 		for (Location iceLocation : changedBlocks.keySet()){
 			for (BlockState state : changedBlocks.get(iceLocation)){

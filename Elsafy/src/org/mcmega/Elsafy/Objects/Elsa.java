@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Queue;
 import java.util.Random;
-import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.bukkit.Bukkit;
@@ -16,7 +15,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.BlockState;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -380,6 +378,10 @@ public class Elsa {
 			loc.getBlock().getRelative(Util.getCardinalDirection(player)).setType(Material.PACKED_ICE);
 		}
 		for (BlockFace face : BlockFace.values()){
+			if (face == BlockFace.DOWN){
+				continue;
+			}
+			
 			Block testBlock = loc.getBlock().getRelative(face);
 			
 			if (testBlock.getType() != Material.WATER && testBlock.getType() != Material.STATIONARY_WATER && testBlock.getType() != Material.PACKED_ICE){
@@ -534,10 +536,13 @@ public class Elsa {
 		}, 5, 1);
 	}
 	
-	private void cancelIceSpreadTask(){
+	public void cancelIceSpreadTask(){
 		if (iceSpreadTask != null){
 			iceSpreadTask.cancel();
 			iceSpreadTask = null;
+		}
+		if (locationsToIce != null){
+			locationsToIce.clear();
 		}
 	}
 	
@@ -562,14 +567,19 @@ public class Elsa {
 		}
 	}
 	
-	public void endElsa(){
+	public void endElsa(boolean force){
 		cancelIceSpreadTask();
 		cancelSnowSwirlingTask();
 		cancelSnowPillarTask(0, true);
 		if (isBridgeActive){
 			disableIceBridge();
 		}
-		elsaRollback.end();
+		if (force){
+			elsaRollback.forceEnd();
+		}else{
+			elsaRollback.end();
+		}
+		
 	}
 
 }

@@ -86,7 +86,7 @@ public class Elsafy extends JavaPlugin {
 	@Override
 	public void onDisable(){
 		for (Elsa elsa : elsaList.values()){
-			elsa.endElsa();
+			elsa.endElsa(true);
 		}
 	}
 	
@@ -133,7 +133,7 @@ public class Elsafy extends JavaPlugin {
 	}
 	
 	public void removeElsa(String pName){
-		elsaList.get(pName).endElsa();
+		elsaList.get(pName).endElsa(false);
 		elsaList.remove(pName);
 	}
 	
