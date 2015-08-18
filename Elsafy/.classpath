@@ -2,7 +2,11 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
-	<classpathentry kind="lib" path="X:/Users/Alexander/Documents/Stuff/Bukkit/Bukkit API/Bukkit-Spigot-Bungee/spigot-1.7.2-R0.3-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="X:/Users/Alexander/Documents/Stuff/Bukkit/Bukkit API/Plugin Dependencies/WorldEdit.jar"/>
+	<classpathentry kind="lib" path="X:/Users/Alexander/Documents/Stuff/Bukkit/Bukkit API/Bukkit-Spigot-Bungee/spigot-api-1.7.10-R0.1-20140801.084611-48.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/X:/Users/Alexander/Documents/Stuff/Bukkit/Bukkit%20API/Bukkit-Spigot-Bungee/spigot-api-1.7.10-R0.1-20140801.084611-48-javadoc/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

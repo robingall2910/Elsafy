@@ -14,6 +14,7 @@ import org.bukkit.entity.Snowball;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 import org.mcmega.Elsafy.Elsafy;
 
 public class IceBall extends BukkitRunnable {
@@ -22,6 +23,8 @@ public class IceBall extends BukkitRunnable {
 	private Snowball ball;
 	private Elsa elsa;
 	private LaunchType type;
+	
+	private float yaw;
 	
 	@SuppressWarnings("deprecation")
 	public IceBall(Elsa elsa, LaunchType type){
@@ -44,6 +47,7 @@ public class IceBall extends BukkitRunnable {
 			velocity = 1;
 		}
 		ball.setVelocity(player.getLocation().getDirection().multiply(velocity));
+		yaw = player.getLocation().getYaw();
 		
 		//arrow = player.launchProjectile(Arrow.class);
 		
@@ -148,6 +152,9 @@ public class IceBall extends BukkitRunnable {
 					}
 					
 				}
+			}else if (type == LaunchType.ICE_SPIKES){
+				System.out.println("Shooting spikes!");
+				elsa.shootIceSpikes(loc, yaw);
 			}
 			
 			ball.remove();

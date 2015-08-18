@@ -1,5 +1,7 @@
 package org.mcmega.Elsafy;
 
+import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -261,6 +263,52 @@ public class Util {
         	}
     	}
     	
+    }
+    
+    public static List<Point2D> drawLine(int x1, int y1, int x2, int y2) {
+    	List<Point2D> points = new ArrayList<Point2D>();
+    	
+        // delta of exact value and rounded value of the dependant variable
+        int d = 0;
+ 
+        int dy = Math.abs(y2 - y1);
+        int dx = Math.abs(x2 - x1);
+ 
+        int dy2 = (dy << 1); // slope scaling factors to avoid floating
+        int dx2 = (dx << 1); // point
+ 
+        int ix = x1 < x2 ? 1 : -1; // increment direction
+        int iy = y1 < y2 ? 1 : -1;
+ 
+        if (dy <= dx) {
+            for (;;) {
+                //plot(g, x1, y1);
+            	points.add(new Point(x1,y1));
+                if (x1 == x2)
+                    break;
+                x1 += ix;
+                d += dy2;
+                if (d > dx) {
+                    y1 += iy;
+                    d -= dx2;
+                }
+            }
+        } else {
+            for (;;) {
+                //plot(g, x1, y1);
+            	points.add(new Point(x1,y1));
+                if (y1 == y2)
+                    break;
+                y1 += iy;
+                d += dx2;
+                if (d > dy) {
+                    x1 += ix;
+                    d -= dy2;
+                }
+            }
+        }
+        
+        return points;
     }
 
 }

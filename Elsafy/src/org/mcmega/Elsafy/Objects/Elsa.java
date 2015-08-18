@@ -1,5 +1,7 @@
 package org.mcmega.Elsafy.Objects;
 
+import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,6 +20,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import org.mcmega.Elsafy.Elsafy;
@@ -61,6 +64,9 @@ public class Elsa {
 	private BridgeBuilder bridgeBuilder;
 	public boolean isBridgeActive = false;
 	
+	//Ice Spikes
+	private long lastRightClickSneaking = 0;
+	
 	//Message Cooldown
 	private long lastWaterFreezeMessage = 0;
 	private long lastInteractFreezeMessage = 0;
@@ -69,6 +75,7 @@ public class Elsa {
 	private long lastSnowPillarMessage = 0;
 	private long lastSnowflakeMessage = 0;
 	private long lastBridgeMessage = 0;
+	private long lastIceSpikesMessage = 0;
 	
 	//Powers Cooldown
 	private long lastIceBlast = 0;
@@ -76,6 +83,7 @@ public class Elsa {
 	private long lastSnowmanBuild = 0;
 	private long lastSnowPillar = 0;
 	private long lastSnowflake = 0;
+	private long lastIceSpikes = 0;
 	
 	public Elsa(final String pName){
 		this.pName = pName;
@@ -143,9 +151,25 @@ public class Elsa {
 	}
 
 	public void callRightClickSneaking(){
+		if (!Elsafy.getInstance().getConfigManager().iceSpikesEnabled){
+			return;
+		}
 		
+		if (lastRightClickSneaking >= System.currentTimeMillis() - 175){
+			
+			if (lastIceSpikes >= System.currentTimeMillis() - Elsafy.getInstance().getConfigManager().buildSnowmanCooldown){
+				return;
+			}
+			
+			Player player = Bukkit.getPlayer(pName);
+			if (player != null){
+				callIceSpikes(player);
+				lastIceSpikes = System.currentTimeMillis();
+			}
+		}
+		lastRightClickSneaking = System.currentTimeMillis();
 	}
-	
+
 	public void callLeftClickSneaking(){
 		if (!Elsafy.getInstance().getConfigManager().snowPillarsEnabled){
 			return;
@@ -263,6 +287,51 @@ public class Elsa {
 				player.sendMessage(ChatColor.DARK_AQUA + "There is beauty in it... but also great danger!");
 			}
 			lastSnowflakeMessage = System.currentTimeMillis();
+		}
+	}
+	
+	private void callIceSpikes(Player player) {
+		new IceBall(this, LaunchType.ICE_SPIKES);
+		if (lastIceSpikesMessage <= System.currentTimeMillis() - 60000){
+			if (player != null){
+				player.sendMessage(ChatColor.DARK_AQUA + "YOU MONSTER!!! Beware your ice magic!");
+			}
+			lastIceSpikesMessage = System.currentTimeMillis();
+		}
+	}
+	
+	public void shootIceSpikes(Location loc, float yaw){
+		int spikes = 15; //TODO: Spike config
+		for (int yawDelta = -60; yawDelta <= 60; yawDelta+=spikes){
+			Location targetLoc = loc.clone();
+			targetLoc.setYaw(yaw + yawDelta);
+			targetLoc.add(targetLoc.getDirection().normalize().multiply(10)); //TODO: Allow different sizes
+			targetLoc.setY(targetLoc.getY() + 3);
+			
+			List<Point2D> points = Util.drawLine(loc.getBlockX(), loc.getBlockZ(), targetLoc.getBlockX(), targetLoc.getBlockZ());
+			double yIncrease = (targetLoc.getBlockY() - loc.getBlockY()) / (double)points.size();
+			int pointsIced = 0;
+			
+			final List<Location> locsToFreeze = new ArrayList<Location>();
+			for (Point2D point : points){
+				int y = (int) (yIncrease * pointsIced);
+				locsToFreeze.add(new Location(loc.getWorld(), point.getX(), loc.getBlockY() + y, point.getY()));
+				pointsIced++;
+			}
+			
+			new BukkitRunnable(){
+				
+				@Override
+				public void run() {
+					if (locsToFreeze.isEmpty()){
+						this.cancel();
+						return;
+					}
+					locsToFreeze.get(0).getBlock().setType(Material.ICE);
+					locsToFreeze.remove(0);
+				}
+				
+			}.runTaskTimer(Elsafy.getInstance(), 0, 1);
 		}
 	}
 	

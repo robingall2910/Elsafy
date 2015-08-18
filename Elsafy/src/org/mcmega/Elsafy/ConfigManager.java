@@ -57,6 +57,12 @@ public class ConfigManager {
 	public boolean bridgeParticles;
 	public int bridgeParticleCount;
 	
+	//Ice Spikes
+	public boolean iceSpikesEnabled = true;
+	public boolean iceSpikesParticles;
+	public int iceSpikesParticleCOunt;
+	public int iceSpikesCooldown = 1000;
+	
 	//Rollback
 	public boolean rollbackEnabled;
 	public boolean rollbackOTFreezeOnInteract;
