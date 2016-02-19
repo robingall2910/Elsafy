@@ -25,6 +25,7 @@ import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.bukkit.BukkitUtil;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 
+@SuppressWarnings("deprecation")
 public class BridgeBuilder extends BukkitRunnable {
 	
 	private Elsa elsa;
@@ -182,7 +183,6 @@ public class BridgeBuilder extends BukkitRunnable {
 		checkForCompletion(pLoc);
 	}
 	
-	@SuppressWarnings("deprecation")
 	private void setBridge(Location location, boolean ignoreElevation, boolean updateNextPlaceLoc){
 		if (!ignoreElevation){
 			//Adjust Y Position and Place flat bridge piece

@@ -1,10 +1,12 @@
 package org.mcmega.Elsafy.Objects;
 
+import java.util.HashSet;
 import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
@@ -14,7 +16,6 @@ import org.bukkit.entity.Snowball;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
 import org.mcmega.Elsafy.Elsafy;
 
 public class IceBall extends BukkitRunnable {
@@ -26,7 +27,6 @@ public class IceBall extends BukkitRunnable {
 	
 	private float yaw;
 	
-	@SuppressWarnings("deprecation")
 	public IceBall(Elsa elsa, LaunchType type){
 		this.elsa = elsa;
 		this.type = type;
@@ -34,7 +34,7 @@ public class IceBall extends BukkitRunnable {
 		if (player == null){
 			return;
 		}
-		Block block = player.getTargetBlock(null, 200);
+		Block block = player.getTargetBlock(new HashSet<Material>(), 200);
 		if (block == null){
 			return;
 		}

@@ -10,6 +10,7 @@ import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.data.DataException;
 import com.sk89q.worldedit.schematic.SchematicFormat;
 
+@SuppressWarnings("deprecation")
 public class BridgeManager {
 	
 	public File flatUncomplete;

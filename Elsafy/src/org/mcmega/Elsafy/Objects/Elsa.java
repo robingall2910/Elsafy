@@ -1,6 +1,5 @@
 package org.mcmega.Elsafy.Objects;
 
-import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -335,9 +334,8 @@ public class Elsa {
 		}
 	}
 	
-	@SuppressWarnings("deprecation")
 	private void buildSnowman(Player player){
-		Block targetBlock = player.getTargetBlock(null, 200);
+		Block targetBlock = player.getTargetBlock(new HashSet<Material>(), 200);
 		if (targetBlock == null){
 			return;
 		}
