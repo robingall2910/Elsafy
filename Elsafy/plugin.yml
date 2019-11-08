@@ -1,7 +1,8 @@
 name: Elsafy
 main: org.mcmega.Elsafy.Elsafy
-version: 2.0
-author: BlueFusion12
+description: Become Elsa with this wonderful plugin that I had to update from 1.8, now 1.14 compatiable!
+version: 2.1
+author: BlueFusion12, Arcaknight
 softdepend: [WorldEdit]
 
 commands:

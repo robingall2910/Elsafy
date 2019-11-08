@@ -41,9 +41,8 @@ public class SnowSwirlingTask extends BukkitRunnable {
 				public void run() {
 					Location effectLoc = loc.getBlock().getRelative(face).getLocation();
 					
-					if (Elsafy.getInstance().isSpigot()){
-						effectLoc.getWorld().spigot().playEffect(effectLoc, Effect.CLOUD, 0, 0, 0, 0, 0, 1, 30, 150);
-					}else{
+					if (Elsafy.getInstance().isSpigot())
+					{
 						effectLoc.getWorld().playEffect(effectLoc, Effect.SMOKE, 0);
 					}
 				}

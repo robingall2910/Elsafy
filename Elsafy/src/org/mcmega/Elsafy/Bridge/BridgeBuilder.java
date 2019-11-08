@@ -97,7 +97,7 @@ public class BridgeBuilder extends BukkitRunnable {
 			itemsToMove.add(player.getInventory().getItem(2));
 			
 			//Up Item
-			ItemStack upItem = new ItemStack(Material.PORTAL);
+			ItemStack upItem = new ItemStack(Material.NETHER_PORTAL);
 			ItemMeta upMeta = upItem.getItemMeta();
 			upMeta.setDisplayName(ChatColor.DARK_GREEN + "UP");
 			List<String> upLore = new ArrayList<String>();
@@ -106,7 +106,7 @@ public class BridgeBuilder extends BukkitRunnable {
 			upItem.setItemMeta(upMeta);
 			
 			//Down Item
-			ItemStack downItem = new ItemStack(Material.PORTAL);
+			ItemStack downItem = new ItemStack(Material.NETHER_PORTAL);
 			ItemMeta downMeta = upItem.getItemMeta();
 			downMeta.setDisplayName(ChatColor.DARK_GREEN + "DOWN");
 			List<String> downLore = new ArrayList<String>();
@@ -239,7 +239,7 @@ public class BridgeBuilder extends BukkitRunnable {
 						}
 						Location snowLoc = BukkitUtil.toLocation(location.getWorld(), snowVector.add(vector).add(cc.getOffset()));
 						Material mat = snowLoc.getBlock().getType();
-						if (mat == Material.SNOW_BLOCK || mat == Material.ICE || mat == Material.STEP){
+						if (mat == Material.SNOW_BLOCK || mat == Material.ICE || mat == Material.LEGACY_STEP){
 							continue;
 						}
 						elsa.getElsaRollback().addEndNotWaterBlock(snowLoc.getBlock().getState());
@@ -292,9 +292,8 @@ public class BridgeBuilder extends BukkitRunnable {
 			if (pLoc.distance(location) < 4){
 				location.getBlock().setType(Material.ICE);
 				if (Elsafy.getInstance().getConfigManager().bridgeParticles){
-					if (Elsafy.getInstance().isSpigot()){
-						location.getWorld().spigot().playEffect(location, Effect.CLOUD, 0, 0, 0, 0, 0, 1, 10, 150);
-					}else{
+					if (Elsafy.getInstance().isSpigot())
+					{
 						location.getWorld().playEffect(location, Effect.SMOKE, 0);
 					}
 				}
@@ -308,7 +307,7 @@ public class BridgeBuilder extends BukkitRunnable {
 		this.cancel();
 		Player player = Bukkit.getPlayer(elsa.getElsaName());
 		if (player != null){
-			player.getInventory().remove(Material.PORTAL);
+			player.getInventory().remove(Material.NETHER_PORTAL);
 		}
 	}
 

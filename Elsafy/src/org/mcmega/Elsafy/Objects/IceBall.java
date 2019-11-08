@@ -67,9 +67,8 @@ public class IceBall extends BukkitRunnable {
 			if (particles){
 				//arrow.getWorld().playEffect(arrow.getLocation(), Effect.SNOWBALL_BREAK, 0);
 				//arrow.getWorld().playEffect(arrow.getLocation(), Effect.CLOUD, 0);
-				if (Elsafy.getInstance().isSpigot()){
-					loc.getWorld().spigot().playEffect(loc, Effect.CLOUD, 0, 0, 0, 0, 0, 1, particleCount, 150);
-				}else{
+				if (Elsafy.getInstance().isSpigot())
+				{
 					loc.getWorld().playEffect(loc, Effect.SMOKE, 0);
 				}
 			}
@@ -80,16 +79,14 @@ public class IceBall extends BukkitRunnable {
 			if (particles){
 				//arrow.getWorld().playEffect(arrow.getLocation(), Effect.SNOWBALL_BREAK, 0);
 				//arrow.getWorld().playEffect(arrow.getLocation(), Effect.CLOUD, 0);
-				if (Elsafy.getInstance().isSpigot()){
-					loc.getWorld().spigot().playEffect(loc, Effect.CLOUD, 0, 0, 0, 0, 0, 1, particleCount, 150);
-				}else{
+				if (Elsafy.getInstance().isSpigot())
+				{
 					loc.getWorld().playEffect(loc, Effect.SMOKE, 0);
 				}
 			}
 		}else if (type == LaunchType.SNOWFLAKE){
-			if (Elsafy.getInstance().isSpigot()){
-				loc.getWorld().spigot().playEffect(loc, Effect.CLOUD, 0, 0, 0, 0, 0, 1, 3, 150);
-			}else{
+			if (Elsafy.getInstance().isSpigot())
+			{
 				loc.getWorld().playEffect(loc, Effect.SMOKE, 0);
 			}
 		}
@@ -101,9 +98,8 @@ public class IceBall extends BukkitRunnable {
 					Location effectLoc = loc.getBlock().getRelative(face).getLocation();
 					//arrow.getWorld().playEffect(arrow.getLocation(), Effect.SNOWBALL_BREAK, 0);
 					//arrow.getWorld().playEffect(arrow.getLocation(), Effect.CLOUD, 0);
-					if (Elsafy.getInstance().isSpigot()){
-						effectLoc.getWorld().spigot().playEffect(effectLoc, Effect.CLOUD, 0, 0, 0, 0, 0, 3.3F, 40, 150);
-					}else{
+					if (Elsafy.getInstance().isSpigot())
+					{
 						effectLoc.getWorld().playEffect(effectLoc, Effect.SMOKE, 0);
 					}
 				}
@@ -120,9 +116,8 @@ public class IceBall extends BukkitRunnable {
 				if (particles){
 					//arrow.getWorld().playEffect(arrow.getLocation(), Effect.SNOWBALL_BREAK, 0);
 					//arrow.getWorld().playEffect(arrow.getLocation(), Effect.CLOUD, 0);
-					if (Elsafy.getInstance().isSpigot()){
-						effectLoc.getWorld().spigot().playEffect(effectLoc, Effect.CLOUD, 0, 0, 0, 0, 0, 1, (particleCount * 2) + 3, 150);
-					}else{
+					if (Elsafy.getInstance().isSpigot())
+					{
 						effectLoc.getWorld().playEffect(effectLoc, Effect.SMOKE, 0);
 					}
 				}

@@ -139,9 +139,8 @@ public class CastleBuilder {
 						session.setBlock(bb.getVector(), bb.getBlock());
 						
 						if (bb.getBlock().getId() != 0){
-							if (Elsafy.getInstance().isSpigot()){
-								loc1.getWorld().spigot().playEffect(new Location(loc1.getWorld(), bb.getVector().getBlockX(), bb.getVector().getBlockY(), bb.getVector().getBlockZ()), Effect.CLOUD, 0, 0, 0, 0, 0, 1, 4, 150);
-							}else{
+							if (Elsafy.getInstance().isSpigot())
+							{
 								loc1.getWorld().playEffect(new Location(loc1.getWorld(), bb.getVector().getBlockX(), bb.getVector().getBlockY(), bb.getVector().getBlockZ()), Effect.SMOKE, 0);
 							}
 						}

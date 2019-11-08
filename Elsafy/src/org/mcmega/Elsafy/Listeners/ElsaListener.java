@@ -96,7 +96,7 @@ public class ElsaListener implements Listener {
     	Elsa elsa = plugin.getElsaObject(player.getName());
     	
     	Material mat = player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType();
-    	if (mat == Material.WATER || mat == Material.STATIONARY_WATER){
+    	if (mat == Material.WATER || mat == Material.LEGACY_STATIONARY_WATER){
     		elsa.walkOnIce(player);
     		return;
     	}
@@ -106,7 +106,7 @@ public class ElsaListener implements Listener {
     		}
     		
     		Material surrounding = player.getLocation().getBlock().getRelative(BlockFace.DOWN).getRelative(face).getType();
-    		if (surrounding == Material.WATER || surrounding == Material.STATIONARY_WATER){
+    		if (surrounding == Material.WATER || surrounding == Material.LEGACY_STATIONARY_WATER){
         		elsa.walkOnIce(player);
         		return;
     		}

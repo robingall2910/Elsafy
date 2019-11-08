@@ -62,7 +62,7 @@ public class BridgeListener implements Listener {
 			 return;
 		 }
 		 
-		 if (event.getItemDrop().getItemStack().getType() == Material.PORTAL){
+		 if (event.getItemDrop().getItemStack().getType() == Material.NETHER_PORTAL){
 			 event.setCancelled(true);
 		 }
 	 }

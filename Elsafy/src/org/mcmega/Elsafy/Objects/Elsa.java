@@ -9,6 +9,7 @@ import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import net.minecraft.server.v1_14_R1.Explosion;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
@@ -245,10 +246,7 @@ public class Elsa {
 			if (misfire > chance){
 				Player player = Bukkit.getPlayer(pName);
 				if (Elsafy.getInstance().getConfigManager().snowPillarParticles && player != null){
-					if (Elsafy.getInstance().isSpigot()){
-						player.getWorld().spigot().playEffect(player.getEyeLocation(), Effect.VILLAGER_THUNDERCLOUD, 0, 0, 0, 0, 0, 1, 7, 150);
-						player.getWorld().playEffect(player.getEyeLocation(), Effect.CLICK1, 0);
-					}else{
+					{
 						player.getWorld().playEffect(player.getEyeLocation(), Effect.SMOKE, 0);
 						player.getWorld().playEffect(player.getEyeLocation(), Effect.CLICK1, 0);
 					}
@@ -343,9 +341,8 @@ public class Elsa {
 		Location newTargetLoc = targetLoc.clone().add(new Vector(0,1,0));
 		for (BlockFace face : BlockFace.values()){
 			Location effectLoc = newTargetLoc.getBlock().getRelative(face).getLocation();
-			if (Elsafy.getInstance().isSpigot()){
-				effectLoc.getWorld().spigot().playEffect(effectLoc, Effect.CLOUD, 0, 0, 0, 0, 0, 1, 15, 150);
-			}else{
+			if (Elsafy.getInstance().isSpigot())
+			{
 				effectLoc.getWorld().playEffect(effectLoc, Effect.SMOKE, 0);
 			}
 			
@@ -439,7 +436,7 @@ public class Elsa {
 	
 	public void walkOnIce(Player player){
 		Location loc = player.getLocation().getBlock().getRelative(BlockFace.DOWN).getLocation();
-		if (loc.getBlock().getType() == Material.WATER || loc.getBlock().getType() == Material.STATIONARY_WATER){
+		if (loc.getBlock().getType() == Material.WATER || loc.getBlock().getType() == Material.LEGACY_STATIONARY_WATER){
 			loc.getBlock().setType(Material.PACKED_ICE);
 			//player.getWorld().spigot().playEffect(loc, Effect.SNOWBALL_BREAK, 0, 0, 0, 0, 0, 1, 6, 60);
 			loc.getBlock().getRelative(Util.getCardinalDirection(player)).setType(Material.PACKED_ICE);
@@ -451,7 +448,7 @@ public class Elsa {
 			
 			Block testBlock = loc.getBlock().getRelative(face);
 			
-			if (testBlock.getType() != Material.WATER && testBlock.getType() != Material.STATIONARY_WATER && testBlock.getType() != Material.PACKED_ICE){
+			if (testBlock.getType() != Material.WATER && testBlock.getType() != Material.LEGACY_STATIONARY_WATER && testBlock.getType() != Material.PACKED_ICE){
 				continue;
 			}else{
 				if (Elsafy.getInstance().getConfigManager().rollbackEFreezeWater){
@@ -510,9 +507,8 @@ public class Elsa {
 					}
 					block.setType(Material.SNOW_BLOCK);
 					if (Elsafy.getInstance().getConfigManager().snowPillarParticles){
-						if (Elsafy.getInstance().isSpigot()){
-							block.getWorld().spigot().playEffect(new Location(block.getWorld(), block.getX(), block.getY(), block.getZ()), Effect.CLOUD, 0, 0, 0, 0, 0, 1, 2, 150);
-						}else{
+						if (Elsafy.getInstance().isSpigot())
+						{
 							block.getWorld().playEffect(new Location(block.getWorld(), block.getX(), block.getY(), block.getZ()), Effect.SMOKE, 0);
 						}
 					}
